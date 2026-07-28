@@ -1,6 +1,7 @@
-class LinkedList {
+export class LinkedList {
     constructor() {
         this.headNode = undefined
+        this.type = 'LinkedList'
     }
 
     append(value) {
@@ -54,7 +55,7 @@ class LinkedList {
     // Return the value of the node at the given index
     at(index) {
         let tmp = this.headNode
-        for (let i = 1; i <= index; i++) {
+        for (let i = 0; i < index; i++) {
             tmp = tmp.nextNode
         }
         
@@ -77,7 +78,7 @@ class LinkedList {
     //  Return true if the passed value is in the list, otherwise return false
     contains(value) {
         let tmp = this.headNode
-        while (tmp !== undefined && tmp.value !== value) {
+        while (tmp !== undefined && tmp.value != value) {
             tmp = tmp.nextNode
         }
 
@@ -122,12 +123,13 @@ class LinkedList {
         if (index > this.size() || index < 0) throw RangeError
         let tmp = this.headNode
         
-        // Traverse until 1 before index
-        for (let i = 1; i < index; i++) {
+        // Traverse until index
+        // TODO: DOESN'T WORK
+        for (let i = 0; i < index - 1; i++) {
             tmp = tmp.nextNode
         }
 
-        const indexNode = tmp.nextNode  //  Save the at(index) node temporarily
+        let indexNode = tmp  //  Save the index node temporarily
 
         // Insert values at index
         for (let j = 0; j < values.length; j++) {
@@ -144,14 +146,23 @@ class LinkedList {
     removeAt(index) {
         if (index >= this.size() || index < 0) throw RangeError
 
-        let tmp = this.headNode
-        // Traverse until 1 before index
-        for (let i = 1; i < index; i++) {
-            tmp = tmp.nextNode
-        }
+        if (this.size() === 1) {
+            this.headNode = undefined
+        } else {
+            let tmp = this.headNode
+            // Traverse until index
+            for (let i = 0; i < index; i++) {
+                tmp = tmp.nextNode
+            }
 
-        // Reassign the reference to go over the node at index, effectively removing the node
-        tmp.nextNode = tmp.nextNode.nextNode
+            // Reassign the reference to go over the node at index, effectively removing the node
+            if (tmp.nextNode.nextNode) {
+                tmp.nextNode = tmp.nextNode.nextNode
+            } else {
+                tmp.value = undefined
+                tmp.nextNode = undefined
+            }
+        }
     }
 }
 
@@ -167,7 +178,7 @@ list.prepend('dog')
 list.prepend('cat')
 list.append('dolphin')
 list.prepend('giraffe')
-list.insertAt(1, 'parrot', 'gorilla', 'rhino')
-list.removeAt(1)
+list.insertAt(0, 'parrot', 'gorilla', 'rhino')
+//list.removeAt(0)
 
-console.log(list.toString())
+console.log(list.toString(), list.at(0))
