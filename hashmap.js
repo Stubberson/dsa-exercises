@@ -4,10 +4,7 @@ class HashMap {
     constructor() {
         this.capacity = 16
         this.loadFactor = 0.75
-        this.buckets = [new LinkedList(), new LinkedList(), new LinkedList(), new LinkedList(),
-                        new LinkedList(), new LinkedList(), new LinkedList(), new LinkedList(),
-                        new LinkedList(), new LinkedList(), new LinkedList(), new LinkedList(),
-                        new LinkedList(), new LinkedList(), new LinkedList(), new LinkedList()]
+        this.buckets = []
     }
 
     hash(key) {
@@ -23,7 +20,13 @@ class HashMap {
     }
     
     set(key, value) {
-        // TODO: Increase capacity when load factor reached
+        // Start with 16 buckets
+        if (this.buckets.length === 0) {
+            for (let i = 0; i < this.capacity; i++) {
+                this.buckets.push(new LinkedList())
+            }
+        }
+        
         const bucketList = this.buckets[this.hash(key)]
         if (!bucketList.headNode || !this.get(key)) {
             bucketList.append({ key, value })
@@ -35,6 +38,14 @@ class HashMap {
                     return
                 }
             }
+        }
+
+        // Double capacity at 75% load
+        if (this.capacity * this.loadFactor < this.length()) {
+            for (let i = 0; i < this.capacity; i++) {
+                this.buckets.push(new LinkedList())
+            }
+            this.capacity *= 2
         }
     }
 
@@ -143,6 +154,6 @@ myMap.set('lion', 'golden')
 
 console.log(myMap.length(), myMap.keys(), myMap.values(), myMap.entries())
 
-myMap.clear()
+// myMap.clear()
 
 console.log(myMap)
