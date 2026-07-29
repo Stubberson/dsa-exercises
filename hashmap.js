@@ -4,7 +4,10 @@ class HashMap {
     constructor() {
         this.capacity = 16
         this.loadFactor = 0.75
-        this.map = {}
+        this.buckets = [new LinkedList(), new LinkedList(), new LinkedList(), new LinkedList(),
+                        new LinkedList(), new LinkedList(), new LinkedList(), new LinkedList(),
+                        new LinkedList(), new LinkedList(), new LinkedList(), new LinkedList(),
+                        new LinkedList(), new LinkedList(), new LinkedList(), new LinkedList()]
     }
 
     hash(key) {
@@ -20,31 +23,24 @@ class HashMap {
     }
     
     set(key, value) {
-        if (this.map[this.hash(key)] === undefined) {
-            let newList = new LinkedList()
-            newList.append({ key, value })
-            this.map[this.hash(key)] = newList
+        // TODO: Increase capacity when load factor reached
+        const bucketList = this.buckets[this.hash(key)]
+        if (!bucketList.headNode || !this.get(key)) {
+            bucketList.append({ key, value })
         } else {
-            // TODO: grow buckets when load factor is reached
-            let bucketList = this.map[this.hash(key)].value
-            if (bucketList === undefined || bucketList.contains({ key, value })) {
-                return
-            } else if (this.map.has(key)) {             // Else if the key already exists, update its value
-                for (let i = 0; i < bucketList.size(); i++) {
-                    if (bucketList.at(i).key === key) {
-                        bucketList.at(i).value = value
-                    }
+            // If the key exists, update its value
+            for (let i = 0; i < bucketList.size(); i++) {
+                if (bucketList.at(i).key === key) {
+                    bucketList.at(i).value = value
+                    return
                 }
-            } else { 
-                bucketList.append({ key, value })       // Else append to the list
             }
         }
     }
 
     // Return the value that is assigned to this key
     get(key) {
-        const bucketList = this.map[this.hash(key)]
-        if (bucketList === undefined) return null
+        const bucketList = this.buckets[this.hash(key)]
         for (let i = 0; i < bucketList.size(); i++) {
             if (bucketList.at(i).key === key) {
                 return bucketList.at(i).value
@@ -55,32 +51,79 @@ class HashMap {
 
     // Return true or false based on whether or not the key is in the hash map
     has(key) {
-        const bucketList = this.map[this.hash(key)]
-        if (bucketList === undefined) return false
-        for (let i = 0; i < bucketList.size(); i++) {
-            if (bucketList.at(i).key === key) {
-                return true
-            }
+        if (this.get(key)) {
+            return true
+        } else {
+            return false
         }
-        return false
     }
 
     // If key in map, remove the entry with key and return true
     remove(key) {
-        const bucketList = this.map[this.hash(key)]
-        if (bucketList === undefined) return false
-        for (let i = 0; i < bucketList.size(); i++) {
-            console.log(bucketList.at(i).key)
-            if (bucketList.at(i).key === key) {
-                bucketList.removeAt(i)
-                console.log(bucketList)
-                if (bucketList.size() === 0) {
-                    delete this.map[this.hash(key)]
+        if (!this.get(key)) {
+            return false
+        } else {
+            const bucketList = this.buckets[this.hash(key)]
+            for (let i = 0; i < bucketList.size(); i++) {
+                if (bucketList.at(i).key === key) {
+                    bucketList.removeAt(i)
+                    return true
                 }
-                return true
             }
         }
-        return false
+    }
+
+    // Return the number of entries
+    length() {
+        let total = 0
+        for (let bucket of this.buckets) {
+            if (bucket.headNode) {
+                total += bucket.size()
+            }
+        }
+        return total
+    }
+
+    // Remove all entries
+    clear() {
+        for (let bucket of this.buckets) {
+            while (bucket.headNode) {
+                bucket.pop()
+            }
+        }
+    }
+
+    // Return all keys
+    keys() {
+        let keysArray = []
+        for (let bucket of this.buckets) {
+            for (let i = 0; i < bucket.size(); i++) {
+                keysArray.push(bucket.at(i).key)
+            }
+        }
+        return keysArray
+    }
+
+    // Return all values
+    values() {
+        let valuesArray = []
+        for (let bucket of this.buckets) {
+            for (let i = 0; i < bucket.size(); i++) {
+                valuesArray.push(bucket.at(i).value)
+            }
+        }
+        return valuesArray
+    }
+
+    // Return all entries
+    entries() {
+        let entriesArray = []
+        for (let bucket of this.buckets) {
+            for (let i = 0; i < bucket.size(); i++) {
+                entriesArray.push([bucket.at(i).key, bucket.at(i).value])
+            }
+        }
+        return entriesArray
     }
 }
 
@@ -98,6 +141,8 @@ myMap.set('jacket', 'blue')
 myMap.set('kite', 'pink')
 myMap.set('lion', 'golden')
 
-myMap.remove('jacket')
+console.log(myMap.length(), myMap.keys(), myMap.values(), myMap.entries())
 
-console.log(myMap, myMap.get('carrot'), myMap.has('arrot'), myMap.get('jacket'))
+myMap.clear()
+
+console.log(myMap)

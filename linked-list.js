@@ -173,12 +173,12 @@ class Node {
     }
 }
 
-const list = new LinkedList()
-list.prepend('dog')
-list.prepend('cat')
-list.append('dolphin')
-list.prepend('giraffe')
-list.insertAt(1, 'parrot', 'gorilla', 'rhino')
-list.removeAt(6)
+// const list = new LinkedList()
+// list.prepend('dog')
+// list.prepend('cat')
+// list.append('dolphin')
+// list.prepend('giraffe')
+// list.insertAt(1, 'parrot', 'gorilla', 'rhino')
+// list.removeAt(6)
 
-console.log(list.toString(), list.at(0), list.findIndex('giraffe'))
+// console.log(list.toString(), list.at(0), list.findIndex('giraffe'))
