@@ -121,47 +121,47 @@ export class LinkedList {
     // Insert new nodes with the given values at the given index
     insertAt(index, ...values) {
         if (index > this.size() || index < 0) throw RangeError
+
         let tmp = this.headNode
         
-        // Traverse until index
-        // TODO: DOESN'T WORK
-        for (let i = 0; i < index - 1; i++) {
-            tmp = tmp.nextNode
+        if (index === 0) {
+            // Insert values at index in "reverse" order
+            for (let j = values.length - 1; j >= 0; j--) {
+                tmp = new Node(values[j], tmp)
+            }
+            this.headNode = tmp
+        } else {
+            // Traverse until index - 1
+            for (let i = 0; i < index - 1; i++) {
+                tmp = tmp.nextNode
+            }
+
+            let indexNode = tmp.nextNode  //  Save the index node temporarily
+
+            for (let j = values.length - 1; j >= 0; j--) {
+                indexNode = new Node(values[j], indexNode)
+            }
+
+            // Restore the connection between (index - 1)-node and node at index
+            tmp.nextNode = indexNode
         }
-
-        let indexNode = tmp  //  Save the index node temporarily
-
-        // Insert values at index
-        for (let j = 0; j < values.length; j++) {
-            let newNode = new Node(values[j])
-            tmp.nextNode = newNode
-            tmp = tmp.nextNode
-        }
-
-        // Add the saved at(index) node, and its following nodes, to the inserted values
-        tmp.nextNode = indexNode
     }
 
     // Remove the node at the given index
     removeAt(index) {
         if (index >= this.size() || index < 0) throw RangeError
 
-        if (this.size() === 1) {
-            this.headNode = undefined
+        if (index === 0) {
+            this.headNode = this.headNode.nextNode
         } else {
             let tmp = this.headNode
-            // Traverse until index
-            for (let i = 0; i < index; i++) {
+            // Traverse until index - 1
+            for (let i = 0; i < index - 1; i++) {
                 tmp = tmp.nextNode
             }
 
             // Reassign the reference to go over the node at index, effectively removing the node
-            if (tmp.nextNode.nextNode) {
-                tmp.nextNode = tmp.nextNode.nextNode
-            } else {
-                tmp.value = undefined
-                tmp.nextNode = undefined
-            }
+            tmp.nextNode = tmp.nextNode.nextNode
         }
     }
 }
@@ -178,7 +178,7 @@ list.prepend('dog')
 list.prepend('cat')
 list.append('dolphin')
 list.prepend('giraffe')
-list.insertAt(0, 'parrot', 'gorilla', 'rhino')
-//list.removeAt(0)
+list.insertAt(1, 'parrot', 'gorilla', 'rhino')
+list.removeAt(6)
 
-console.log(list.toString(), list.at(0))
+console.log(list.toString(), list.at(0), list.findIndex('giraffe'))
