@@ -29,8 +29,26 @@ class Tree {
         return root
     }
 
+    // Return true if value is in the tree, else false
+    includes(value) {
+        let tmpRoot = this.root
+
+        while (tmpRoot) {
+            if (value === tmpRoot.value) {
+                return true
+            } else if (value > tmpRoot.value) {
+                tmpRoot = tmpRoot.right
+            } else {
+                tmpRoot = tmpRoot.left
+            }
+        }
+        return false
+    }
+
 }
 
+
+// Helper function to print the tree nicely (given)
 const prettyPrint = (node, prefix = '', isLeft = true) => {
     if (node === null || node === undefined) {
         return
@@ -44,4 +62,5 @@ const prettyPrint = (node, prefix = '', isLeft = true) => {
 
 // [1, 3, 4, 5, 7, 8, 9, 23, 67, 324, 6345]
 const myTree = new Tree([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324])
+console.log(myTree.includes(234))
 prettyPrint(myTree.root)
