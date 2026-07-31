@@ -1,5 +1,3 @@
-// be sure to always remove duplicate values or check for an existing value before inserting.
-
 class Node {
     constructor(value = undefined, left = undefined, right = undefined) {
         this.value = value
@@ -31,20 +29,67 @@ class Tree {
 
     // Return true if value is in the tree, else false
     includes(value) {
-        let tmpRoot = this.root
-
-        while (tmpRoot) {
-            if (value === tmpRoot.value) {
+        let current = this.root
+        while (current) {
+            if (value === current.value) {
                 return true
-            } else if (value > tmpRoot.value) {
-                tmpRoot = tmpRoot.right
+            } else if (value > current.value) {
+                current = current.right
             } else {
-                tmpRoot = tmpRoot.left
+                current = current.left
             }
         }
         return false
     }
 
+    // Insert a new node into the tree. If value exists, do nothing
+    insert(value) {
+        if (this.includes(value)) return
+
+        // Track parent to allow connecting new node with tree/parent
+        let current = this.root
+        let parent = null
+        
+        while (current) {
+            parent = current
+            if (value > current.value) {
+                current = current.right
+            } else {
+                current = current.left
+            }
+        }
+
+        value > parent.value  // Insert the node
+            ? parent.right = new Node(value) 
+            : parent.left = new Node(value)
+    }
+
+    // Remove node from the tree
+    removeNode(value) {
+        if (!this.includes(value)) return
+
+        let current = this.root
+        let parent = null
+        
+        while (current.value !== value) {
+            parent = current
+            if (value > current.value) {
+                current = current.right
+            } else {
+                current = current.left
+            }
+        }
+
+        let currentChildren = 0
+        if (current.right) currentChildren++
+        if (current.left) currentChildren++
+
+        // If current has two children
+        let closestChild = undefined
+        if (currentChildren === 2) {
+        
+        }
+    }
 }
 
 
@@ -62,5 +107,12 @@ const prettyPrint = (node, prefix = '', isLeft = true) => {
 
 // [1, 3, 4, 5, 7, 8, 9, 23, 67, 324, 6345]
 const myTree = new Tree([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324])
-console.log(myTree.includes(234))
+
+myTree.insert(10)
+myTree.insert(1052)
+myTree.insert(6)
+myTree.insert(0)
+
+myTree.removeNode(4)
+
 prettyPrint(myTree.root)
