@@ -84,10 +84,48 @@ class Tree {
         if (current.right) currentChildren++
         if (current.left) currentChildren++
 
-        // If current has two children
-        let closestChild = undefined
+        // If current has no children
+        if (currentChildren === 0 && value > parent.value) {
+            parent.right = null
+        } else if (currentChildren === 0 && value < parent.value) {
+            parent.left = null
+        }
+
+        // If current has 1 child
+        if (currentChildren === 1 && value > parent.value) {
+            current.right 
+                ? parent.right = current.right 
+                : parent.right = current.left
+        } else if (currentChildren === 1 && value < parent.value) {
+            current.right 
+                ? parent.left = current.right 
+                : parent.left = current.left
+        }
+
+        // If current has 2 children
         if (currentChildren === 2) {
-        
+            // Find in-order successor
+            let successor = current.right
+            // Closest successor is always a leaf with no left child
+            while (successor.left) {
+                successor = successor.left
+            }
+            // Replace 
+            current.value = successor.value
+            if (current.right.value === successor.value) {
+                successor.right
+                    ? current.right = successor.right
+                    : current.right = null
+            } else {
+                // In case successor is not the immediate child
+                let successorParent = current.right
+                while (successorParent.left.value !== successor.value) {
+                    successorParent = successorParent.left
+                }
+                successor.right
+                    ? successorParent.left = successor.right
+                    : successorParent.left = null
+            }
         }
     }
 }
@@ -113,6 +151,8 @@ myTree.insert(1052)
 myTree.insert(6)
 myTree.insert(0)
 
-myTree.removeNode(4)
+prettyPrint(myTree.root)
+
+myTree.removeNode(67)
 
 prettyPrint(myTree.root)
