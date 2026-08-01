@@ -106,9 +106,8 @@ class Tree {
         if (currentChildren === 2) {
             // Find in-order successor
             let successor = current.right
-            // Closest successor is always a leaf with no left child
             while (successor.left) {
-                successor = successor.left
+                successor = successor.left  // Closest successor is always a leaf with no left child
             }
             // Replace 
             current.value = successor.value
@@ -127,6 +126,25 @@ class Tree {
                     : successorParent.left = null
             }
         }
+    }
+
+    // Traverse tree in breadth-first level order and call callback on each value
+    levelOrderForEach(callback) {
+        if (!callback) {
+            throw new Error('No callback given')
+        }
+        
+        let queue = []
+        queue.push(this.root)  // Initially, add the root to the queue (FIFO)
+
+        while (queue.length > 0) {
+            let current = queue.shift()
+            callback(current.value)
+            if (current.left) queue.push(current.left)
+            if (current.right) queue.push(current.right)
+        }
+
+        
     }
 }
 
@@ -153,6 +171,4 @@ myTree.insert(0)
 
 prettyPrint(myTree.root)
 
-myTree.removeNode(67)
-
-prettyPrint(myTree.root)
+myTree.levelOrderForEach(console.log)
