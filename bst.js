@@ -1,5 +1,5 @@
 class Node {
-    constructor(value = undefined, left = undefined, right = undefined) {
+    constructor(value = null, left = null, right = null) {
         this.value = value
         this.left = left
         this.right = right
@@ -128,14 +128,14 @@ class Tree {
         }
     }
 
-    // Traverse tree in breadth-first level order and call callback on each value
+    // Breadth-first traversal, calling a callback on each value
     levelOrderForEach(callback) {
         if (!callback) {
             throw new Error('No callback given')
         }
         
-        let queue = []
-        queue.push(this.root)  // Initially, add the root to the queue (FIFO)
+        let queue = []  // Queue is FIFO
+        queue.push(this.root)
 
         while (queue.length > 0) {
             let current = queue.shift()
@@ -143,8 +143,49 @@ class Tree {
             if (current.left) queue.push(current.left)
             if (current.right) queue.push(current.right)
         }
+    }
 
+    // Depth-first traversal
+    preOrderForEach(callback) {  // root -> left-branch -> right-branch
+        if (!callback) {
+            throw new Error('No callback given')
+        }
+
+        let stack = []  // Stack is FILO
+        stack.push(this.root)
+
+        while (stack.length > 0) {
+            let current = stack.pop()  // pop(), instead of shift(), to use as stack
+            callback(current.value)
+            if (current.right) stack.push(current.right)
+            if (current.left) stack.push(current.left)
+        }
+    }
+
+    inOrderForEach(callback) {  // left -> root -> right
+        if (!callback) {
+            throw new Error('No callback given')
+        }
+
+        let stack = []
+        let current = this.root
         
+        while (stack.length > 0 || current !== null) {  // Second condition is needed to enter the loop
+            if (current !== null) {
+                stack.push(current)
+                current = current.left
+            } else {
+                current = stack.pop()
+                callback(current.value)
+                current = current.right
+            }
+        }
+    }
+        
+    postOrderForEach(callback) {  // left -> right -> root
+        if (!callback) {
+            throw new Error('No callback given')
+        }
     }
 }
 
@@ -171,4 +212,4 @@ myTree.insert(0)
 
 prettyPrint(myTree.root)
 
-myTree.levelOrderForEach(console.log)
+myTree.inOrderForEach(console.log)
