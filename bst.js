@@ -138,7 +138,7 @@ class Tree {
         queue.push(this.root)
 
         while (queue.length > 0) {
-            let current = queue.shift()
+            let current = queue.shift()  // shift() to use as queue
             callback(current.value)
             if (current.left) queue.push(current.left)
             if (current.right) queue.push(current.right)
@@ -170,8 +170,8 @@ class Tree {
         let stack = []
         let current = this.root
         
-        while (stack.length > 0 || current !== null) {  // Second condition is needed to enter the loop
-            if (current !== null) {
+        while (stack.length > 0 || current) {  // Second condition is needed to enter the loop
+            if (current) {
                 stack.push(current)
                 current = current.left
             } else {
@@ -186,6 +186,84 @@ class Tree {
         if (!callback) {
             throw new Error('No callback given')
         }
+
+        let stack = []
+        let current = this.root
+        let parent = null
+        let peekNode = null
+        
+        while (stack.length > 0 || current) {
+            if (current) {
+                stack.push(current)
+                current = current.left
+            } else {
+                peekNode = stack[stack.length - 1]  // Don't pop the node yet, only "peek" at it
+                if (peekNode.right && parent !== peekNode.right) {
+                    current = peekNode.right
+                } else {
+                    callback(peekNode.value)
+                    parent = stack.pop()
+                }
+            }
+        }
+    }
+
+    // Return the height of the node containing the value
+    // Height is defined as the number of edges in the longest path from that node to a leaf node
+    height(value) {
+        if (!this.includes(value)) return undefined
+
+        let current = this.root
+
+        // First, find node with value
+        while (current.value !== value) {
+            if (value > current.value) {
+                current = current.right
+            } else {
+                current = current.left
+            }
+        }
+
+        // Initialize a queue to traverse
+        let queue = [current]
+        let height = 0
+
+        while (queue.length > 0) {
+            // Traverse all nodes at the current level
+            for (let i = 0; i < queue.length; i++) {
+                let current = queue.shift()
+
+                if (current.left) queue.push(current.left)
+                if (current.right) queue.push(current.right)
+            }
+
+            // Increment height after traversing a level
+            height++
+        }
+
+        return height - 1
+    }
+
+    // Return the depth of the node containing value
+    // Depth is the number of edges in the path from node to root node
+    depth(value) {
+        if (!this.includes(value)) return undefined
+
+        let current = this.root
+        let depth = 0
+
+        // Find node with value while counting depth
+        while (current.value !== value) {
+            if (value > current.value) {
+                current = current.right
+                depth++
+            } else {
+                current = current.left
+                depth++
+            }
+        }
+
+        return depth
     }
 }
 
@@ -212,4 +290,4 @@ myTree.insert(0)
 
 prettyPrint(myTree.root)
 
-myTree.inOrderForEach(console.log)
+console.log(myTree.depth(324))
