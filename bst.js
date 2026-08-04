@@ -130,9 +130,7 @@ class Tree {
 
     // Breadth-first traversal, calling a callback on each value
     levelOrderForEach(callback) {
-        if (!callback) {
-            throw new Error('No callback given')
-        }
+        if (!callback) throw new Error('No callback given')
         
         let queue = []  // Queue is FIFO
         queue.push(this.root)
@@ -147,9 +145,7 @@ class Tree {
 
     // Depth-first traversal
     preOrderForEach(callback) {  // root -> left-branch -> right-branch
-        if (!callback) {
-            throw new Error('No callback given')
-        }
+        if (!callback) throw new Error('No callback given')
 
         let stack = []  // Stack is FILO
         stack.push(this.root)
@@ -163,9 +159,7 @@ class Tree {
     }
 
     inOrderForEach(callback) {  // left -> root -> right
-        if (!callback) {
-            throw new Error('No callback given')
-        }
+        if (!callback) throw new Error('No callback given')
 
         let stack = []
         let current = this.root
@@ -183,9 +177,7 @@ class Tree {
     }
         
     postOrderForEach(callback) {  // left -> right -> root
-        if (!callback) {
-            throw new Error('No callback given')
-        }
+        if (!callback) throw new Error('No callback given')
 
         let stack = []
         let current = this.root
@@ -265,6 +257,51 @@ class Tree {
 
         return depth
     }
+
+    // Check if the tree is balanced
+    // A binary tree is considered balanced if, for every node in the tree, 
+    // the height difference between its left and right subtrees is no more than 1
+    isBalanced() {
+        let queue = []
+        queue.push(this.root)
+
+        let leftHeight = 0
+        let rightHeight = 0
+
+        while (queue.length > 0) {    
+            let current = queue.shift()
+            
+            if (current.left) {
+                queue.push(current.left)
+                leftHeight = this.height(current.left.value)
+            }
+
+            if (current.right) {
+                queue.push(current.right)
+                rightHeight = this.height(current.right.value)
+            }
+
+            if (Math.abs(leftHeight - rightHeight > 1)) return false
+        }
+
+        return true
+    }
+
+    reBalance() {
+        if (this.isBalanced()) return
+
+        let array = []
+        // Create a callback that simply adds a value to the array
+        const addTo = value => {
+            array.push(value)
+        }
+
+        // Call the callback for each node in order
+        this.inOrderForEach(addTo)
+
+        // Build a new tree with the list
+        this.root = this.#buildTree(array)
+    }
 }
 
 
@@ -283,11 +320,16 @@ const prettyPrint = (node, prefix = '', isLeft = true) => {
 // [1, 3, 4, 5, 7, 8, 9, 23, 67, 324, 6345]
 const myTree = new Tree([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324])
 
-myTree.insert(10)
-myTree.insert(1052)
-myTree.insert(6)
-myTree.insert(0)
+myTree.insert(103)
+myTree.insert(105)
+myTree.insert(106)
+myTree.insert(109)
+myTree.insert(111)
 
 prettyPrint(myTree.root)
+console.log(myTree.isBalanced())
 
-console.log(myTree.depth(324))
+myTree.reBalance()
+
+prettyPrint(myTree.root)
+console.log(myTree.isBalanced())
